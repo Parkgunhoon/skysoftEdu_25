@@ -24,5 +24,9 @@
 - Master 브랜드에는 어느것도 커밋하지 말아주시고 Clone받은 진행자는 새로운 브랜치(본인 이름의 이니셜)를 생성한 뒤 진행해 주시고 최종 제출때에만 Push해주시기 바랍니다. (※ Git 에서의 Commit은 로컬저장소에만 적용됩니다. 마음껏 Commit 하세요) 
 
 
+
+
 - 문의 사항은 plusitstory@skysoft.co.kr 로 문의 주세요.
+ 
+
 [하늘연소프트](http://www.skysoft.co.kr)
