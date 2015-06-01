@@ -1,4 +1,4 @@
-package egovframework.dev.test.util;
+package egovframework.dev.testStarter.util;
 
 class MyVector {
 	protected Object[] data = null; // 객체를 담기 위한 객체배열을 선언한다.
