@@ -304,9 +304,9 @@ class MyVector {
 		StringBuffer sb = new StringBuffer(100);
 
 		for(int i = 0;i<size;i++){
-			if(i!=0){
+
 				sb.append(data[i]);
-			}
+
 
 			//sb.append(get(i));
 		}
