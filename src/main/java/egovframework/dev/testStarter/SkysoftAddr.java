@@ -2,9 +2,14 @@ package egovframework.dev.testStarter;
 
 class SkysoftAddr {
     private static String[][] addrArr = {
-        // TODO Auto-generated method stub
-    };
+    	{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"}
+    	,{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"}
+    	,{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"}
+    	,{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"},{"하늘연소프트","대리","홍길동"}};
     public static void main(String args[]) {
-        // TODO Auto-generated method stub
+    	for(int i=0;i<addrArr.length;i++){
+			int a=0;
+			System.out.println(addrArr[i][a]+"\t"+addrArr[i][a+1]+"\t"+addrArr[i][a+2]);
+		}
     }
 }

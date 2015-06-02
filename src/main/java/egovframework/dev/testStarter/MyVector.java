@@ -1,4 +1,5 @@
-package egovframework.dev.testStarter.util;
+package egovframework.dev.testStarter;
+
 
 class MyVector {
 	protected Object[] data = null; // 객체를 담기 위한 객체배열을 선언한다.
@@ -140,7 +141,7 @@ class MyVector {
 	 * 5. Comment    : 데이터 용량(capacity)에 맞춰 크기(size) 범위 안에서 데이터의 순서(index)를 조정
 	 *                               하여 데이터를 추가 한다.
 	 * </PRE>
-	 * 
+	 *
 	 * @return void
 	 * @param index
 	 *            : 데이터의 순서
@@ -148,6 +149,17 @@ class MyVector {
 	 *            : 입력된 객체
 	 */
 	public void add(int index, Object obj) {
+				/*if(index>size){throw new ArrayIndexOutOfBoundsException(index + " >= " + size);}
+				ensureCapacity(size+1);
+				Object[] tmp = new Object[size];
+				System.arraycopy(data, index, tmp, index+1, size);
+
+				this.data = tmp;*/
+				//System.arraycopy(obj, 0, tmp, index, size);
+				//this.data = tmp;
+				//size++;
+
+
 		// 1. index의 값이 size보다크면, ArrayIndexOutOfBoundsException
 		// 2. ensureCapacity()를 호출해서 새로운 객체가 저장될 공간을 확보한다.
 		// 3. 객체배열에서 index위치의 객체와 이후의 객체들을 한칸씩 옆으로 이동한다. (System.arraycopy()사용)
@@ -164,7 +176,7 @@ class MyVector {
 	 * 5. Comment    : 데이터 용량(capacity)에 맞춰 크기(size) 범위 안에서 데이터의 순서(index)를 조정
 	 *                               하여 데이터를 제거 한다.
 	 * </PRE>
-	 * 
+	 *
 	 * @return Object
 	 * @param index
 	 * @return
@@ -187,7 +199,7 @@ class MyVector {
 	 * 4. Creation Date    : 2012. 8. 30. 오전 10:43:19
 	 * 5. Comment    : 데이터를 삭제한다
 	 * </PRE>
-	 * 
+	 *
 	 * @return boolean
 	 * @param obj
 	 * @return
@@ -208,7 +220,7 @@ class MyVector {
 	 * 4. Creation Date    : 2012. 8. 30. 오전 10:53:26
 	 * 5. Comment    : Vector를 초기화한다 RETURN NOT NULL
 	 * </PRE>
-	 * 
+	 *
 	 * @return void
 	 */
 	public void clear() {
@@ -224,15 +236,17 @@ class MyVector {
 	 * 4. Creation Date     : 2012. 8. 30. 오전 11:19:04
 	 * 5. Comment    : 배열을 복사한다
 	 * </PRE>
-	 * 
+	 *
 	 * @return Object[]
 	 * @return
 	 */
 	public Object[] toArray() {
+		Object[] tmp = new Object[capacity];
+		System.arraycopy(data, 0, tmp, 0, size);
 		// 1. 객체배열 data와 같은 크기의 객체배열을 생성한다.
 		// 2. 배열의 내용을 복사한다. (System.arraycopy()사용)
 		// 3. 생성한 객체배열을 반환한다.
-		return null;	//작성시 제거후 옳바른 코드를 넣으세요.
+		return tmp;	//작성시 제거후 옳바른 코드를 넣으세요.
 	}
 
 	/**
@@ -243,7 +257,7 @@ class MyVector {
 	 * 4. Creation Date    : 2012. 8. 30. 오전 11:19:19
 	 * 5. Comment    : 배열객체를 String으로 변경하여 반환한다
 	 * </PRE>
-	 * 
+	 *
 	 * @return
 	 */
 	public String toString() {
@@ -274,6 +288,7 @@ class MyVectorEx4 {
 
 		v.clear();
 		System.out.println("4. v.toString : " + v.toString() + "\t" + "size:" + v.size() + "\t" + "capacity:" + v.capacity() + "\t" + "isEmpty:" + v.isEmpty());
-
+		System.out.println(v.toArray());
 	} // main
 } // class MyVectorEx4
+
