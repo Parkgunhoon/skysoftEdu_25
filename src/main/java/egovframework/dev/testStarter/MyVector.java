@@ -1,9 +1,11 @@
 package egovframework.dev.testStarter;
 
+import com.sun.corba.se.impl.ior.OldObjectKeyTemplateBase;
+
 
 class MyVector {
 	protected Object[] data = null; // 객체를 담기 위한 객체배열을 선언한다.
-	protected int capacity = 0; // 용량
+	protected int capacity = 0; // 용량 //2
 	protected int size = 0; // 크기
 
 	public MyVector(int capacity) {
@@ -19,6 +21,8 @@ class MyVector {
 
 	public boolean isEmpty() { // MyVector가 비어있는지 확인한다.
 		return size == 0;
+		/*if(size==0)System.out.println("사이즈가 비어있습니다.");
+		System.out.println("사이즈 값은"+size+"입니다.");*/
 	}
 
 	public int capacity() { // MyVector의 용량(크기)를 반환한다.
@@ -27,6 +31,11 @@ class MyVector {
 
 	public int size() { // MyVector에 저장된 객체의 개수를 반환한다.
 		return size;
+		/*int vecnum = 0;
+		for(int i=0;i<data.length;i++){
+			vecnum++;
+		}
+		return vecnum;*/
 	}
 
 	public void addSize() { // 사이즈 증가
@@ -127,6 +136,7 @@ class MyVector {
 		return indexOf(obj, 0);
 	}
 
+
 	public int lastIndexOf(Object obj) {
 		// 찾기 시작할 위치(index)를 지정하지 않으면 끝부터 찾는다.
 		return lastIndexOf(obj, size - 1);
@@ -149,15 +159,23 @@ class MyVector {
 	 *            : 입력된 객체
 	 */
 	public void add(int index, Object obj) {
-				/*if(index>size){throw new ArrayIndexOutOfBoundsException(index + " >= " + size);}
-				ensureCapacity(size+1);
-				Object[] tmp = new Object[size];
-				System.arraycopy(data, index, tmp, index+1, size);
+				if(index>size){throw new ArrayIndexOutOfBoundsException(index + " >= " + size);}
+				ensureCapacity(size + 1);
+				//Object[] tmp = new Object[size];
+				System.arraycopy(data, index, data, index+1, size-index);
+				//data = tmp;
+				data[index] = obj;
 
-				this.data = tmp;*/
+				//addSize();
+
+				/*ensureCapacity(size + 1);
+				data[size++] = obj;*/
+
 				//System.arraycopy(obj, 0, tmp, index, size);
 				//this.data = tmp;
-				//size++;
+				size++;
+
+
 
 
 		// 1. index의 값이 size보다크면, ArrayIndexOutOfBoundsException
@@ -182,13 +200,24 @@ class MyVector {
 	 * @return
 	 */
 	public Object remove(int index) {
+		if(index<0 || index>=size)throw new IndexOutOfBoundsException(index + ">" + data.length);
+		Object oldObj = null;
+		oldObj = data[index];
+		if(index != size-1){
+			//Object[] tmp = new Object[size];
+			System.arraycopy(data, index+1, data, index, size-index-1);
+			//data = tmp;
+		}
+			data[size-1] = null;
+			minusSize();
+
 		// 1. index가 배열의 범위를 벗어나는지 체크하고, 벗어나면 IndexOutOfBoundsException를 발생시킨다.
 		// 2. 삭제하고자하는 데이터를 oldObj에 저장한다.
 		// 3. 삭제하고자 하는 객체가 마지막 객체가 아니라면, 배열복사를 통해 빈자리를 채워준다.
 		// 4. 마지막 데이터를 null로 한다. 배열은 0 부터 시작하므로 마지막 요소는 index가 size-1이다.
 		// 5. size의 값을 1 감소시킨다.
 		// 6. oldObj를 반환한다.
-		return null;	//작성시 제거후 옳바른 코드를 넣으세요.
+		return oldObj;	//작성시 제거후 옳바른 코드를 넣으세요.
 	}
 
 	/**
@@ -205,7 +234,13 @@ class MyVector {
 	 * @return
 	 */
 	public boolean remove(Object obj) {
-		boolean flag = false;
+		//boolean flag = false;
+		for(int i = 0;i<size;i++){
+			if(obj.equals(data[i])){
+				remove(i);
+				return true;
+			}
+		}
 		// 1. 반복문을 이용해서 객체배열의 모든 요소와 obj가 일치하는지 확인한다.
 		// 1.1 일치하면 remove(int index)를 호출해서 삭제하고 true를 반환한다.
 		// 1.2 일치하는 것을 찾지 못하면, false를 반환한다.
@@ -224,6 +259,11 @@ class MyVector {
 	 * @return void
 	 */
 	public void clear() {
+		for(int i = 0;i<size;i++){
+			data[i] = null;
+		}
+		size = 0;
+		//capacity = 0;
 		// 코드를 완성하세요.
 		// return 값은 null이 아닙니다.
 	}
@@ -241,7 +281,7 @@ class MyVector {
 	 * @return
 	 */
 	public Object[] toArray() {
-		Object[] tmp = new Object[capacity];
+		Object[] tmp = new Object[size];
 		System.arraycopy(data, 0, tmp, 0, size);
 		// 1. 객체배열 data와 같은 크기의 객체배열을 생성한다.
 		// 2. 배열의 내용을 복사한다. (System.arraycopy()사용)
@@ -261,10 +301,20 @@ class MyVector {
 	 * @return
 	 */
 	public String toString() {
+		StringBuffer sb = new StringBuffer(100);
+
+		for(int i = 0;i<size;i++){
+			if(i!=0){
+				sb.append(data[i]);
+			}
+
+			//sb.append(get(i));
+		}
+
 		// 1. StringBuffer를 생성한다.
 		// 2. 반복문과 get(int i)를 사용해서 배열의 모든 요소에 접근해서 toString()을 호출해서 sb에 저장한다.
 		// 3. sb를 String으로 변환해서 반환한다.
-		return null;	//작성시 제거후 옳바른 코드를 넣으세요.
+		return sb.toString();	//작성시 제거후 옳바른 코드를 넣으세요.
 	}
 
 } // class MyVector
@@ -288,7 +338,7 @@ class MyVectorEx4 {
 
 		v.clear();
 		System.out.println("4. v.toString : " + v.toString() + "\t" + "size:" + v.size() + "\t" + "capacity:" + v.capacity() + "\t" + "isEmpty:" + v.isEmpty());
-		System.out.println(v.toArray());
+		//System.out.println(v.toArray());
 	} // main
 } // class MyVectorEx4
 
