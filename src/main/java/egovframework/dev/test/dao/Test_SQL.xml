@@ -3,23 +3,101 @@
 
 <sqlMap namespace="TestSQL">
 
-	<typeAlias alias="testVO" type="egovframework.dev.test.vo.TestVO"/>
+    <typeAlias alias="testVO" type="egovframework.dev.test.vo.TestVO"/>
 
-	<!-- typeAlias :: Start! -->
-	<resultMap id="TestMap"		class="testVO">
-		<result property="seq"			column="SEQ" />
-	</resultMap>
-	<!-- typeAlias :: End! -->
+    <!-- typeAlias :: Start! -->
+    <resultMap id="TestMap"        class="TestVO">
+        <result property="seq"            column="SEQ" />   <!-- 컬럼추가 -->
+        <result property="title"        column="TITLE" />
+        <result property="contents"        column="CONTENTS" />
+        <result property="regDtm"        column="REG_DTM" />
+    </resultMap>
+    <resultMap id="TestListMap"        class="TestVO">
+        <result property="seq"            column="SEQ" />
+        <result property="title"          column="TITLE" />
+        <result property="regDtm"        column="REG_DTM" />
+    </resultMap>
 
-	<!-- C -->
-	<!-- R -->
-	<!-- U -->
-	<!-- D -->
-	<!-- L -->
-	<select id="testDAO.selectTestList" parameterClass="testVO" resultMap="TestMap">
-		/* testDAO.selectTestList */
-		SELECT SEQ
-		FROM TB_SKY_TEST
-	</select>
+    <resultMap id="TestListMap2"        class="TestVO">
+        <result property="seq"            column="SEQ" />
+    </resultMap>
+    <!-- typeAlias :: End! -->
 
+    <!-- C -->
+    <insert id="testDAO.insertTestCreate" parameterClass="TestVO">
+        /* testDAO.insertTestCreate */
+        INSERT INTO
+               TB_SKY_TEST(SEQ, TITLE, CONTENTS)
+           VALUES (SEQ_SKY_TEST.NEXTVAL, #title#, #contents#)
+    </insert>
+    <!-- R -->
+    <select id="testDAO.selectTestRead" parameterClass="testVO" resultMap="TestMap">
+        /* testDAO.selectTestRead */
+        SELECT SEQ,
+               TITLE,
+          CONTENTS,
+          REG_DTM
+          FROM TB_SKY_TEST
+         WHERE SEQ = #seq#
+    </select>
+    <!-- U -->
+    <update id="testDAO.updateTestUpdate" parameterClass="TestVO">
+        /* testDAO.updateTestUpdate */
+        UPDATE TB_SKY_TEST
+            SET TITLE = #title#, CONTENTS = #contents#, REG_DTM = SYSDATE
+         WHERE SEQ = #seq#
+    </update>
+    <!-- D -->
+    <delete id="testDAO.deleteTestDelete" parameterClass="TestVO">
+        /* testDAO.deleteTestDelete */
+        DELETE TB_SKY_TEST
+         WHERE SEQ = #seq#
+    </delete>
+    <!-- L -->
+    <select id="testDAO.selectTestList" parameterClass="TestVO" resultMap="TestListMap">
+        <!-- SELECT SEQ,
+               TITLE,
+               REG_DTM
+          FROM TB_SKY_TEST
+          ORDER BY SEQ DESC
+          limit #firstIndex#, #recordCountPerPage# -->
+
+          SELECT RN,
+                 SEQ,
+                 TITLE,
+                 REG_DTM
+            FROM ( SELECT ROWNUM AS RN,
+                          A.*
+                     FROM (SELECT * FROM TB_SKY_TEST ORDER BY SEQ DESC) A
+                 )
+           WHERE RN BETWEEN #firstIndex#+1 and #firstIndex#+#recordCountPerPage#
+    </select>
+
+    <select id="testDAO.selectTestSearch" parameterClass="TestVO" resultMap="TestListMap">
+        <!-- SELECT SEQ,
+               TITLE,
+               REG_DTM
+          FROM TB_SKY_TEST
+          ORDER BY SEQ DESC
+          limit #firstIndex#, #recordCountPerPage# -->
+
+          SELECT RN,
+                 SEQ,
+                 TITLE,
+                 REG_DTM
+            FROM ( SELECT ROWNUM AS RN,
+                          A.*
+                     FROM (SELECT * FROM TB_SKY_TEST ORDER BY SEQ DESC) A
+                     WHERE TITLE LIKE '%'||#search#||'%'
+                 )
+           WHERE RN BETWEEN #firstIndex#+1 and #firstIndex#+#recordCountPerPage#
+    </select>
+
+    <select id="testDAO.countList" parameterClass="TestVO" resultClass="int">
+            SELECT COUNT(SEQ) FROM TB_SKY_TEST
+    </select>
+    <select id="testDAO.countList2" parameterClass="TestVO" resultClass="int">
+            SELECT COUNT(SEQ) FROM TB_SKY_TEST WHERE TITLE LIKE '%'||#search#||'%'
+    </select>
+	<!-- 토탈카운트용 하나 만들어보자 -->
 </sqlMap>
