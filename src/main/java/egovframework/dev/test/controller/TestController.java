@@ -1,22 +1,31 @@
 package egovframework.dev.test.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.Request;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.net.ssl.internal.ssl.Debug;
 
 import egovframework.dev.test.service.TestService;
+import egovframework.dev.test.vo.PageUtilBean;
+import egovframework.dev.test.vo.PaginationUtil;
 import egovframework.dev.test.vo.TestVO;
 import egovframework.framework.annotation.PageTitle;
 import egovframework.framework.util.StringUtil;
@@ -62,32 +71,34 @@ public class TestController {//주석
 	public String retrieveList(
 			@ModelAttribute("srchVO") TestVO srchVO,
 			ModelMap model)  throws Exception {
-		/* Service, DAO 작성후 주석제거 */
-		log.debug("REQ ::: "+StringUtil.nullConvert(srchVO.getTitle()));
 
-		PaginationInfo paginationInfo = new PaginationInfo();
-		paginationInfo.setCurrentPageNo(srchVO.getcPageNo());
-		paginationInfo.setRecordCountPerPage(5);
-		paginationInfo.setPageSize(5);
-
-		int firstRecordIndex = paginationInfo.getFirstRecordIndex();
-		int recordCountPerPage = paginationInfo.getRecordCountPerPage();
-
-		srchVO.setFirstIndex(firstRecordIndex);
-		srchVO.setRecordCountPerPage(recordCountPerPage);
-
-		List<TestVO> list = testService.retrieveTestList(srchVO);
-		int totCnum = testService.countTest(srchVO);
-
-		//List<TestVO> totCount = testService.countTest(srchVO);
-		//paginationInfo.setTotalRecordCount(totCount.size());
-		paginationInfo.setTotalRecordCount(totCnum);
+		Map<String,Object> map = testService.retrieveTestList(srchVO);
 
 		model.addAttribute("srchVO", srchVO);
-		model.addAttribute("contentLIst", list);
-		model.addAttribute("paginationInfo", paginationInfo);
+		model.addAttribute("contentLIst", map.get("category"));
+		model.addAttribute("paginationInfo", map.get("paginationInfo"));
+		model.addAttribute("pageUtilBean", map.get("pageUtilBean"));
 		return "test/list";
 	}
+
+/*	@PageTitle("리스트(L)")
+	@RequestMapping(value = "/test/list2.do")
+	public String retrieveListP(
+			@ModelAttribute("srchVO") TestVO srchVO,
+			ModelMap model)  throws Exception {
+
+		Map<String,Object> map = testService.retrieveTestList(srchVO);
+
+
+		PaginationUtil pag = new PaginationUtil();
+		String url = "/test/list2.do";
+		pag.makePageAnchorByHref(Integer.toString(srchVO.getcPageNo()), Integer.toString(totCnum), "5", "5", url);
+
+		model.addAttribute("srchVO", srchVO);
+		model.addAttribute("contentLIst", map.get("category"));
+		model.addAttribute("paginationInfo", map.get("paginationInfo"));
+		return "test/list";
+	}*/           // 페이징 util 나중에 확인해 보자
 
 	@PageTitle("검색")
 	@RequestMapping(value = "/test/search.do")//경로지정
@@ -132,34 +143,21 @@ public class TestController {//주석
 	public String insertProcTest(
 			@ModelAttribute("vo") TestVO vo,
 			ModelMap model) throws Exception {
+
 		testService.insertTest(vo);
-		return "redirect:/test/list.do?cPageNo=" + vo.getcPageNo();
+		return "redirect:/test/list.do";
 	}
 
-	/*@RequestMapping(value = "/test/list.do", params = "type=input", method = RequestMethod.POST)
-	public String retrieveList1(
-			@ModelAttribute("srchVO") TestVO srchVO,
-			ModelMap model, String pageNo) throws Exception {
-		 Service, DAO 작성후 주석제거
-		log.debug("REQ ::: "+StringUtil.nullConvert(srchVO.getTitle()));
-		PaginationInfo paginationInfo = new PaginationInfo();
-		paginationInfo.setCurrentPageNo(srchVO.getcPageNo());
-		paginationInfo.setRecordCountPerPage(10);
-		paginationInfo.setPageSize(8);
+	@PageTitle("다운로드(Down) fileDownload")
+	@RequestMapping(value = "/test/download.do")//경로지정
+	@ResponseBody
+	public byte[] fileDownloadTest(
+			@ModelAttribute("vo") TestVO vo,
+			ModelMap model,
+			HttpServletResponse response) throws Exception {
 
-		int firstRecordIndex = paginationInfo.getFirstRecordIndex();
-		srchVO.setFirstIndex(firstRecordIndex);
-		srchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
-
-
-		testService.insertTest(srchVO);
-		List<TestVO> list = testService.retrieveTestList(srchVO);
-		paginationInfo.setTotalRecordCount(list.size());
-		model.addAttribute("paginationInfo", paginationInfo);
-		model.addAttribute("contentLIst", list);
-		return "test/list";
+		return testService.fileDownload(vo,response);
 	}
-*/
 
 	@PageTitle("조회(R)")
 	@RequestMapping(value = "/test/read.do")//경로지정
@@ -174,12 +172,11 @@ public class TestController {//주석
 	@PageTitle("수정(U)")
 	@RequestMapping(value = "/test/update.do", method = RequestMethod.POST)
 	public String update(
-			@ModelAttribute("srchVO") TestVO srchVO,
+			@ModelAttribute("vo") TestVO vo,
 			ModelMap model) throws Exception {
-		/* Service, DAO 작성후 주석제거 */
-		log.debug("REQ ::: "+StringUtil.nullConvert(srchVO.getTitle()));
-		testService.updateTest(srchVO);
-		return "redirect:/test/list.do?cPageNo=" + srchVO.getcPageNo();
+
+		testService.updateTest(vo);
+		return "redirect:/test/list.do";
 	}
 
 	@PageTitle("삭제(D)")
@@ -190,7 +187,7 @@ public class TestController {//주석
 		/* Service, DAO 작성후 주석제거 */
 		log.debug("REQ ::: "+StringUtil.nullConvert(srchVO.getTitle()));
 		testService.deleteTest(srchVO);
-		return "redirect:/test/list.do?cPageNo=" + srchVO.getcPageNo();
+		return "redirect:/test/list.do";
 	}
 
 	@PageTitle("삭제(D)2")
@@ -209,12 +206,101 @@ public class TestController {//주석
 				log.debug(Integer.parseInt(delList[i]));
 			}
 
-			//srchVO.getSeq()
-			/*for(int i=0;i<cks.length;i++){
-			System.out.println("1");
-			}*/
-
 		}
 		return "redirect:/test/list.do";
 	}
+
+	@PageTitle("파일삭제(D)")
+	@RequestMapping(value = "/test/fileDelete.do")
+	public String fileDelete(
+			@ModelAttribute("srchVO") TestVO srchVO,
+			ModelMap model) throws Exception {
+
+
+		testService.fileDeleteTest(srchVO);
+		return "redirect:/test/read.do?seq="+srchVO.getSeq();
+	}
+
+	@PageTitle("엑셀다운로드(다운로드)")
+	@RequestMapping(value = "/test/excelDownload.do")
+	public ModelAndView excelDownload(
+			@ModelAttribute("vo") TestVO vo) throws Exception {
+
+		Map<String,Object> map = testService.retrieveTestList(vo);
+
+		return new ModelAndView("categoryExcelView", "categoryMap", map);
+	}
+
+	@PageTitle("엑셀전체다운로드(다운로드)")
+	@RequestMapping(value = "/test/excelAllDownload.do")
+	public ModelAndView excelAllDownload(
+			@ModelAttribute("vo") TestVO vo) throws Exception {
+
+		Map<String,Object> map = testService.excelAllDownload(vo);
+
+		return new ModelAndView("categoryExcelView", "categoryMap", map);
+	}
+
+	@PageTitle("엑셀업로드화면(C)")
+	@RequestMapping(value = "/test/excelUploadView.do")
+	public String excelUploadView(
+			@ModelAttribute("srchVO") TestVO srchVO,
+			ModelMap model) throws Exception {
+
+		return "test/categoryExcelView";
+	}
+
+	@PageTitle("엑셀업로드저장(C)")
+	@RequestMapping(value = "/test/excelUpload.do", method=RequestMethod.POST)
+	public String excelUpload(
+			@ModelAttribute("srchVO") TestVO srchVO,
+			ModelMap model) throws Exception {
+
+
+		model.addAttribute("result", testService.excelUpload(srchVO));
+
+		return "test/categoryExcelView";
+	}
+
+	@PageTitle("네이버API")
+	@RequestMapping(value = "/test/naverApi.do", method=RequestMethod.POST)
+	public String naverApi(
+			@ModelAttribute("srchVO") TestVO srchVO,
+			ModelMap model) throws Exception {
+
+		List<TestVO> naverList = testService.naverApi(srchVO);
+		model.addAttribute("naverList", naverList);
+		model.addAttribute("srchVO", srchVO);
+
+		return "test/naverApi";
+	}
+
+	@PageTitle("기안 리스트")
+	@RequestMapping(value = "/test/draftList.do")
+	public String draftList(
+			@ModelAttribute("srchVO") TestVO srchVO,
+			ModelMap model)  throws Exception {
+
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(srchVO.getcPageNo());
+		paginationInfo.setRecordCountPerPage(5);
+		paginationInfo.setPageSize(5);
+
+		int firstRecordIndex = paginationInfo.getFirstRecordIndex();
+		int recordCountPerPage = paginationInfo.getRecordCountPerPage();
+
+		srchVO.setFirstIndex(firstRecordIndex);
+		srchVO.setRecordCountPerPage(recordCountPerPage);
+
+		int totCnum = testService.countTest(srchVO);
+		paginationInfo.setTotalRecordCount(totCnum);
+
+		srchVO.setSeq(2);
+		List<TestVO> list = testService.draftTestList(srchVO);
+		model.addAttribute("srchVO", srchVO);
+		model.addAttribute("paginationInfo", paginationInfo);
+		model.addAttribute("list", list);
+		return "test/draftList";
+	}
+
 }

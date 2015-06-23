@@ -15,8 +15,8 @@ public class TestDAO extends EgovAbstractDAO {
      * @param TestVO 검색VO
      * @return List<TestVO>
      */
-	public void insertTest(TestVO vo) {
-		insert("testDAO.insertTestCreate", vo);
+	public int insertTest(TestVO vo) {
+		return (Integer) insert("testDAO.insertTestCreate", vo);
 	}
 
 	public void updateTest(TestVO vo) {
@@ -39,6 +39,10 @@ public class TestDAO extends EgovAbstractDAO {
 		return (TestVO)selectByPk("testDAO.selectTestRead", vo);
 	}
 
+	public TestVO insertTestNaver(TestVO vo) {
+		return (TestVO) insert("testDAO.insertTestNaver", vo);
+	}
+
 
 
 	/*@SuppressWarnings("unchecked")
@@ -58,6 +62,32 @@ public class TestDAO extends EgovAbstractDAO {
 	@SuppressWarnings("unchecked")
 	public List<TestVO> searchTest(TestVO srchVO) {
 		return list("testDAO.selectTestSearch", srchVO);
+	}
+
+	public void fileInsertTest(TestVO vo) {
+		insert("testDAO.fileInsertTest", vo);
+	}
+
+	public void fileDelete(TestVO srchVO) {
+		update("testDAO.fileDelete", srchVO);
+	}
+
+	public TestVO nonFileRead(TestVO vo) {
+		return (TestVO)selectByPk("testDAO.nonFileRead", vo);
+	}
+
+	public void fileUpdate(TestVO vo) {
+		update("testDAO.fileUpdate", vo);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TestVO> excelAllDownload(TestVO vo) {
+		return list("testDAO.excelAllDownload", vo);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TestVO> selectDraftList(TestVO srchVO) {
+		return list("testDAO.selectDraftList", srchVO);
 	}
 
 }

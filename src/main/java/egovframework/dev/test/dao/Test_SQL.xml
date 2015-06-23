@@ -8,96 +8,324 @@
     <!-- typeAlias :: Start! -->
     <resultMap id="TestMap"        class="TestVO">
         <result property="seq"            column="SEQ" />   <!-- 컬럼추가 -->
+        <result property="fileSeq"            column="FILE_SEQ" />
+        <result property="title"        column="TITLE" />
+        <result property="contents"        column="CONTENTS" />
+        <result property="regDtm"        column="REG_DTM" />
+        <result property="saveFileNm"        column="SAVE_FILE_NM" />
+        <result property="realFileNm"        column="REAL_FILE_NM" />
+    </resultMap>
+     <!-- typeAlias :: End! -->
+
+      <!-- typeAlias :: Start! -->
+    <resultMap id="nonFileMap"        class="TestVO">
+        <result property="seq"            column="SEQ" />   <!-- 컬럼추가 -->
+        <result property="fileSeq"            column="FILE_SEQ" />
         <result property="title"        column="TITLE" />
         <result property="contents"        column="CONTENTS" />
         <result property="regDtm"        column="REG_DTM" />
     </resultMap>
+     <!-- typeAlias :: End! -->
+
+
+    <!-- typeAlias :: Start! -->
     <resultMap id="TestListMap"        class="TestVO">
         <result property="seq"            column="SEQ" />
         <result property="title"          column="TITLE" />
         <result property="regDtm"        column="REG_DTM" />
+        <result property="realFileNm"        column="REAL_FILE_NM" />
+        <result property="useYn"        column="USE_YN" />
     </resultMap>
+     <!-- typeAlias :: End! -->
 
+     <!-- typeAlias :: Start! -->
     <resultMap id="TestListMap2"        class="TestVO">
         <result property="seq"            column="SEQ" />
     </resultMap>
     <!-- typeAlias :: End! -->
 
+    <!-- typeAlias :: Start! -->
+    <resultMap id="excelAllListMap"        class="TestVO">
+        <result property="seq"            column="SEQ" />
+        <result property="title"          column="TITLE" />
+        <result property="regDtm"        column="REG_DTM" />
+    </resultMap>
+     <!-- typeAlias :: End! -->
+	<!-- 네이버DB -->
+	<resultMap id="NaverMap"        class="TestVO">
+        <result property="seq"            column="SEQ" />   <!-- 컬럼추가 -->
+        <result property="nTitle"            column="TITLE" />
+        <result property="description"        column="CONTENTS" />
+        <result property="link"        column="LINK" />
+        <result property="image"        column="IMAGE" />
+    </resultMap>
+
+
+<!-- 기안 -->
+    <resultMap id="draftMap"        class="TestVO">
+        <result property="seq"            column="SEQ" />   <!-- 컬럼추가 -->
+        <result property="userSeq"            column="USER_SEQ" />
+        <result property="draftTypeCd"        column="DRAFT_TYPE_CD" />
+        <result property="emerPhone"        column="EMER_PHONE" />
+        <result property="reason"        column="REASON" />
+        <result property="etc"        column="ETC" />
+        <result property="halfCd"        column="HALF_CD" />
+        <result property="docNm"        column="DOC_NM" />
+        <result property="startDt"        column="START_DT" />
+        <result property="endDt"        column="END_DT" />
+        <result property="regDtm"        column="REG_DTM" />
+        <result property="drafterNm"        column="DRAFTER_NM" />
+        <result property="reviewerNm"        column="REVIEWER_NM" />
+        <result property="approvalNm"        column="APPROVAL_NM" />
+        <result property="stateCd"        column="STATE_CD" />
+        <result property="stepCd"        column="STEP_CD" />
+        <result property="title"        column="TITLE" />
+    </resultMap>
+<!-- 기안 -->
+
+<!-- 기안 -->
+    <resultMap id="draftListMap"        class="TestVO">
+        <result property="seq"            column="SEQ" />   <!-- 컬럼추가 -->
+        <result property="draftTypeCd"        column="DRAFT_TYPE_CD" />
+        <result property="regDtm"        column="REG_DTM" />
+        <result property="drafterNm"        column="DRAFTER_NM" />
+        <result property="stateCd"        column="STATE_CD" />
+        <result property="stepCd"        column="STEP_CD" />
+        <result property="title"        column="TITLE" />
+    </resultMap>
+<!-- 기안 -->
+
+<!-- 기안 -->
+    <resultMap id="draftUserMap"        class="TestVO">
+        <result property="seq"            column="SEQ" />   <!-- 컬럼추가 -->
+        <result property="userNm"            column="USER_NM" />
+        <result property="groupCd"        column="GROUP_CD" />
+        <result property="rankCd"        column="RANK_CD" />
+    </resultMap>
+<!-- 기안 -->
+
+<!-- 기안값 -->
+<!-- <select id="testDAO.selectDraft" parameterClass="TestVO" resultMap="draftMap">
+	SELECT
+                      SEQ,
+                      USER_SEQ,
+                      DRAFT_TYPE_CD,
+                      EMER_PHONE,
+                      REASON,
+                      ETC,
+                      HALF_CD,
+                      DOC_NM,
+                      START_DT,
+                      END_DT,
+                      REG_DTM,
+                      DRAFTER_NM,
+                      REVIEWER_NM,
+                      APPROVAL_NM,
+                      STATE_CD,
+                      STEP_CD,
+                      TITLE
+      FROM TB_DRAFT
+	WHERE DRAFT_TYPE_CD=#draftTypeCd#
+</select> -->
+<!-- 기안값 -->
+
+<!-- 기안리스트 -->
+<select id="testDAO.selectDraftList" parameterClass="TestVO" resultMap="draftListMap">
+	SELECT A.SEQ AS SEQ,
+	       A.DRAFTER_NM AS DRAFTER_NM,
+	       A.REG_DTM AS REG_DTM,
+	       (SELECT CD_NM FROM TB_COMMON_CD WHERE CD_TYPE='DRA01' AND A.DRAFT_TYPE_CD=CD)AS DRAFT_TYPE_CD,
+	       A.TITLE AS TITLE,
+	       (SELECT CD_NM FROM TB_COMMON_CD WHERE CD_TYPE='STE01' AND A.STEP_CD=CD)AS STEP_CD,
+	       (SELECT CD_NM FROM TB_COMMON_CD WHERE CD_TYPE='STA01' AND STATE_CD=CD)AS STATE_CD
+	 FROM TB_DRAFT A, TB_USER B
+	WHERE B.SEQ=#seq#
+</select>
+<!-- 기안리스트 END-->
+
+<!-- 기안 유저값 -->
+<!-- <select id="testDAO.selectDraftUser" parameterClass="TestVO" resultMap="draftUserMap">
+	SELECT
+        SEQ,
+        (SELECT CD_NM FROM TB_COMMON_CD WHERE CD_TYPE='GRP01' AND GROUP_CD=CD) AS GROUP_CD,
+        USER_NM,
+        (SELECT CD_NM FROM TB_COMMON_CD WHERE CD_TYPE='RAN01' AND RANK_CD=CD) AS RANK_CD
+      FROM TB_USER
+	WHERE SEQ=2
+</select> -->
+<!-- 기안 유저값 end-->
+
+
+
+
+
+
+
+
+
+
+
+<!-- ________________________________________________________________________________________________ -->
     <!-- C -->
     <insert id="testDAO.insertTestCreate" parameterClass="TestVO">
-        /* testDAO.insertTestCreate */
+      <selectKey keyProperty="seq" resultClass="Integer">
+        SELECT SEQ_SKY_TEST.NEXTVAL AS SEQ FROM DUAL
+      </selectKey>
         INSERT INTO
                TB_SKY_TEST(SEQ, TITLE, CONTENTS)
-           VALUES (SEQ_SKY_TEST.NEXTVAL, #title#, #contents#)
+           VALUES (#seq#, #title#, #contents#)
     </insert>
+
+	<insert id="testDAO.insertTestNaver" parameterClass="TestVO">
+	INSERT INTO
+               TB_SKY_TEST_NAVER
+           VALUES (SEQ_SKY_TEST_NAVER.NEXTVAL, #nTitle#, #description#, #link#, #image#)
+    </insert>
+
+    <!-- File C -->
+    <insert id="testDAO.fileInsertTest" parameterClass="TestVO">
+        INSERT INTO
+               TB_SKY_TEST_FILE
+        VALUES (
+        		 #seq#,
+        		 1,
+        		 'Y',
+        		 #saveFileNm#,
+        		 #realFileNm#,
+        		 SYSDATE
+        	    )
+    </insert>
+
     <!-- R -->
     <select id="testDAO.selectTestRead" parameterClass="testVO" resultMap="TestMap">
-        /* testDAO.selectTestRead */
-        SELECT SEQ,
-               TITLE,
-          CONTENTS,
-          REG_DTM
-          FROM TB_SKY_TEST
-         WHERE SEQ = #seq#
+       SELECT SEQ,
+              FILE_SEQ,
+              TITLE,
+              CONTENTS,
+              TST.REG_DTM AS REG_DTM,
+              SAVE_FILE_NM,
+              REAL_FILE_NM
+         FROM TB_SKY_TEST TST
+         JOIN TB_SKY_TEST_FILE TSTF
+           ON TST.SEQ = TSTF.ORG_SEQ
+        WHERE TST.SEQ = #seq#
+          AND USE_YN = 'Y'
     </select>
+
+  <!--NON FILE R -->
+    <select id="testDAO.nonFileRead" parameterClass="testVO" resultMap="nonFileMap">
+       SELECT SEQ,
+              FILE_SEQ,
+              TITLE,
+              CONTENTS,
+              TST.REG_DTM AS REG_DTM
+         FROM TB_SKY_TEST TST
+         JOIN TB_SKY_TEST_FILE TSTF
+           ON TST.SEQ = TSTF.ORG_SEQ
+        WHERE TST.SEQ = #seq#
+    </select>
+
     <!-- U -->
     <update id="testDAO.updateTestUpdate" parameterClass="TestVO">
-        /* testDAO.updateTestUpdate */
         UPDATE TB_SKY_TEST
-            SET TITLE = #title#, CONTENTS = #contents#, REG_DTM = SYSDATE
+           SET TITLE = #title#,
+               CONTENTS = #contents#,
+               REG_DTM = SYSDATE
          WHERE SEQ = #seq#
     </update>
+
+     <!--File U -->
+    <update id="testDAO.fileUpdate" parameterClass="TestVO">
+        UPDATE TB_SKY_TEST_FILE
+           SET USE_YN = 'Y',
+               SAVE_FILE_NM = #saveFileNm#,
+               REAL_FILE_NM = #realFileNm#
+         WHERE ORG_SEQ = #seq#
+    </update>
+
+        <!--File Delete -->
+    <update id="testDAO.fileDelete" parameterClass="TestVO">
+        UPDATE TB_SKY_TEST_File
+           SET USE_YN = 'N'
+         WHERE ORG_SEQ = #seq#
+    </update>
+
     <!-- D -->
     <delete id="testDAO.deleteTestDelete" parameterClass="TestVO">
         /* testDAO.deleteTestDelete */
         DELETE TB_SKY_TEST
          WHERE SEQ = #seq#
     </delete>
+
     <!-- L -->
     <select id="testDAO.selectTestList" parameterClass="TestVO" resultMap="TestListMap">
-        <!-- SELECT SEQ,
-               TITLE,
-               REG_DTM
-          FROM TB_SKY_TEST
-          ORDER BY SEQ DESC
-          limit #firstIndex#, #recordCountPerPage# -->
-
-          SELECT RN,
+         SELECT RN,
                  SEQ,
                  TITLE,
-                 REG_DTM
+                 REG_DTM,
+                 REAL_FILE_NM,
+                 USE_YN
             FROM ( SELECT ROWNUM AS RN,
                           A.*
-                     FROM (SELECT * FROM TB_SKY_TEST ORDER BY SEQ DESC) A
+                     FROM (
+                            SELECT SEQ,
+                                   TITLE,
+                                   TST.REG_DTM AS REG_DTM,
+                                   TSTF.REAL_FILE_NM AS REAL_FILE_NM,
+                                   USE_YN
+                              FROM TB_SKY_TEST TST
+                              JOIN TB_SKY_TEST_FILE TSTF
+                                ON TST.SEQ = TSTF.ORG_SEQ
+                          ORDER BY SEQ
+                              DESC
+                           )A
                  )
-           WHERE RN BETWEEN #firstIndex#+1 and #firstIndex#+#recordCountPerPage#
+           WHERE RN
+         BETWEEN #firstIndex#+1
+             AND #firstIndex#+#recordCountPerPage#
     </select>
 
     <select id="testDAO.selectTestSearch" parameterClass="TestVO" resultMap="TestListMap">
-        <!-- SELECT SEQ,
-               TITLE,
-               REG_DTM
-          FROM TB_SKY_TEST
-          ORDER BY SEQ DESC
-          limit #firstIndex#, #recordCountPerPage# -->
-
           SELECT RN,
                  SEQ,
                  TITLE,
-                 REG_DTM
+                 REG_DTM,
+                 REAL_FILE_NM
             FROM ( SELECT ROWNUM AS RN,
                           A.*
-                     FROM (SELECT * FROM TB_SKY_TEST ORDER BY SEQ DESC) A
+                     FROM (
+                            SELECT SEQ,
+                                   TITLE,
+                                   TST.REG_DTM AS REG_DTM,
+                                   TSTF.REAL_FILE_NM AS REAL_FILE_NM
+                              FROM TB_SKY_TEST TST
+                              JOIN TB_SKY_TEST_FILE TSTF
+                                ON TST.SEQ = TSTF.ORG_SEQ
+                          ORDER BY SEQ
+                              DESC
+                           )A
                      WHERE TITLE LIKE '%'||#search#||'%'
                  )
-           WHERE RN BETWEEN #firstIndex#+1 and #firstIndex#+#recordCountPerPage#
+           WHERE RN
+         BETWEEN #firstIndex#+1
+             AND #firstIndex#+#recordCountPerPage#
     </select>
 
     <select id="testDAO.countList" parameterClass="TestVO" resultClass="int">
-            SELECT COUNT(SEQ) FROM TB_SKY_TEST
+          SELECT COUNT(ORG_SEQ) FROM TB_SKY_TEST_FILE
     </select>
     <select id="testDAO.countList2" parameterClass="TestVO" resultClass="int">
-            SELECT COUNT(SEQ) FROM TB_SKY_TEST WHERE TITLE LIKE '%'||#search#||'%'
+          SELECT COUNT(SEQ) FROM TB_SKY_TEST WHERE TITLE LIKE '%'||#search#||'%'
     </select>
-	<!-- 토탈카운트용 하나 만들어보자 -->
+
+	 <!--ExcelAllDownload L -->
+	<select id="testDAO.excelAllDownload" parameterClass="TestVO" resultMap="excelAllListMap">
+          SELECT SEQ,
+                 TITLE,
+                 REG_DTM
+                 FROM TB_SKY_TEST
+        ORDER BY REG_DTM
+            DESC
+    </select>
+
 </sqlMap>
